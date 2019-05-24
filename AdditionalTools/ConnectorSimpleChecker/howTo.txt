@@ -1,0 +1,22 @@
+20180305 : Connector Simple Checker
+--------
+v1.0
+
+Purpose :
+---
+Makes easier the detection of any obvious issue on a connector's main class.
+
+
+Deployment :
+---
+Unpack the ConnectorSimpleChecker folder in the public Kiamo folder :
+=> <Kiamo>\data\userfiles\public
+
+
+Usage :
+---
+Open a web browser at the following page, with your connector's name as parameter :
+http://127.0.0.1/public/ConnectorSimpleChecker/?name=<YOUR_CONNECTOR>
+
+The page will display the detected errors, if any.
+The errors can be syntax, missing function, environment variable, ...
