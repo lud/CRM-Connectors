@@ -34,7 +34,7 @@ Each sample can be used as a simple illustration, or as support to a more specif
 
 The synthetic design of a Kiamo CRM Connector can be presented as the following scheme :
 
-
+![Kiamo CRM Connector Design](https://github.com/openKiamo/CRM-Connectors/blob/master/_Docs/data/01_KiamoConnectorCRM.png)
 
 
 
