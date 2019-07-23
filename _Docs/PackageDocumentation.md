@@ -32,22 +32,389 @@ Each sample can be used as a simple illustration, or as support to a more specif
 
 ####  Description
 
-The synthetic design of a Kiamo CRM Connector can be presented as the following scheme :
+The following scheme presents a synthetic design of a Kiamo CRM Connector :
 
 ![Kiamo CRM Connector Design](https://github.com/openKiamo/CRM-Connectors/blob/master/_Docs/data/01_KiamoConnectorCRM.png)
+
+It's mainly dedicated to gather external data and entities, corresponding to the inputs received by Kiamo, as a customer or a ticket description for instance.
+
+The folder of a given CRM connector sample is a little folder tree :
+
+* `<root>`        : the main module (implementation of the CRM connector) and its sub-modules,
+  * the interaction manager, which creates and maintain a valid session with the external API, and communicates with the external services to gather the data required by the connector,
+  * the entity manager, which maps the external data received from the APIs into a valid Kiamo structured form,
+  * the customization manager, which implements the specific treatments (as phone number format, list sorting and filtering, ...).
+
+* `conf`          : configuration files folder,
+
+* `data`          : resources folder,
+
+* `logs`          : log files folder,
+
+* `tools`        : all the tools sources provided by the package.
+
+
+
+Each  sample manages the connection with a specific external CRM.
+
+The reference Kiamo documentation to implement a connector is unchanged : « `Development of CRM-ERP connectors` ».
+
+ 
+
+The Kiamo deployment folder for a connector is :
+
+`<Kiamo Folder>/data/userfiles/class/Connectors/<ConnectorName>`
+
+ 
+
+The sample code and structure are quite easy to read and understand. The documentation provides additional details to understand the global idea and implementation particularities, for a better appropriation.
+
+<u>Note</u> : in this document and the related code, the following notions will be used :
+
+* `entity`, an entity representing a kind of item. For instance "contact", "company", "user's ticket", ...
+
+* `entry`, an entity instance. For instance, the data block describing the "contact" M. Winston Churchill.
+
+These two notions are used this way in all the connector samples, but are different of the ones present on the Kiamo connector function names.
+
+ 
+
+The current CRM connector samples (may 2019) are the following :
+
+* an **MS Dynamics 365** *(API v9.0, 2018)* generic connector,
+
+* a **Salesforce Lightning** *(API v41.0, winter 2018)* generic connector,
+
+* an **Edeal** *(API 2015)* generic connector.
 
 
 
 ------
 
+### Design
+
+The following scheme presents the typical architecture of a connector sample :
+
+![Connector Sample Architecture](https://github.com/openKiamo/CRM-Connectors/blob/master/_Docs/data/02_ConnectorSampleDesign.png)
+
+
+
+Basically, the design is the following :
+
+* the Kiamo connector receives the search criteria from Kiamo (as a phone number, an email address, ...) and will return the found matching results,
+* it uses an `InteractionManager` sub-module, which converts the search criteria into actual external services requests,
+* the matching results are sent to the `EntitiesManager`, which converts the raw returned results into the Kiamo required data format,
+* during this process, the `CustomizationManager` is used for any specific data treatment : data formatting, list and results sorting and filtering, ...
+* all those classes use a common set of resources, configurations and toolkit :
+  * a configuration, containing all the data required to connect and use the external service, and to map the entries between the external format into the Kiamo expected format,
+  * daily logs,
+  * resource files,
+  * a toolkit (logger, confManager, webRequester, ...).
+
+
+
+In more details, the design of those samples is split in 3 main parts :
+
+* the Kiamo CRM connector :
+
+  it's the main class.
+  * It's mainly the visible bridge between Kiamo and the external CRM. It defines the kind of entities the connector can return, and the connector's features.
+  * In the sample package, this class is mainly an empty shell, using it sub-modules to manage the actual tasks :
+    * search and gather the external CRM data (session, access),
+    * map the data,
+    * apply the specific treatments (sort, filter, format, ...).
+
+  The external entities search is driven by the provided inputs (as a phone number, an id, ...) and the configuration (action priority, specific treatment, ...).
+
+* the sample architecture is composed of :
+
+  * the Kiamo CRM Connector class (at the root of the folder, see upper).
+
+    This class contains :
+
+    * the usual Kiamo CRM connector features implementation,
+    * a configuration manager, which ease the access to the configuration items,
+    * a logs manager.
+
+    Those helper instances are hold by this module, and propagated to the sub-modules (see below).
+
+  * the connector's sub-modules :
+
+    * the `InteractionManager` : manages the session and the requests to the external CRM API, returns the raw results (as they are returned by the APIs).
+
+      This sub-module hides the session token management (get a valid one, save it for future request, renew it if expired, ...). This avoid useless external API calls.
+
+    * the `EntitiesManager` : it knows the raw format of the API results, and the format expected by Kiamo.
+
+      Using the configuration, it checks the returned data validity and maps the raw result into the expected Kiamo format (`EntityLayout`, `EntityInstance`, `EntitiesCollections`).
+
+    * the `CustomizationManager` :  this class is dedicated to any specific treatment implementation required by the current integration, and the standard / default treatments easing the input / output manipulations.
+
+      For instance, we'll find here *eligibility methods* (for example, a string with letters cannot be a phone number ; it's relevant not to call the external API to search entries by phone number with such string), *pre-treatments* (for example, remove all the space from an input phone number, or format it as it's stored in the external database), *post-treatments* (most relevant item of a returned list, as opened tickets for example), etc.
+
+    Those sub-modules benefit of the helper instances of the parent module, as the configuration manager, the logs manager, ...
+
+  * the package tree :
+
+    * `conf` folder   : contains the configuration files, in particular the connector and the logger configurations,
+    * `data` folder   : contains the module's resources. In the current design, it will contain a little cache file used to store the latest valid API session token.
+    * `logs` folder   : logs of the package,
+    * `tools` folder : toolkit of the package (see below),
+
+* the package helpers :
+
+  The implementation of the package helpers is present in the `tools` folder. There are three kind of helpers :
+
+  * `Module` and `SubModule` : provide the logs and configuration access capabilities.
+  * `autoload`, `ConfManager` and `Logger` : main helpers linked to the `Module` and `SubModule` classes.
+  * All the other tools : they provide all kind of data and resource accesses and treatments.
+
+It's of course possible to modify and extend this toolkit for any further need.
+
+
 
 ### Connector
 
-####  Kiamo Connector (Module)
+A Kiamo CRM connector can be implemented in one and only class.
+
+In those samples, the implementation is split between a main module, the connector itself, and three sub-modules, each one attached to a specific responsibility set :
+
+* the connector  :
+  * implements the methods requested by the connector implementation documentation,
+  * is driven by its configuration to request the external CRM and search the items matching the Kiamo inputs. It implements the configuration reading and execution.
+* the sub-modules :
+  * the `InteractionManager`  :
+    * implements the external CRM authentication, the valid session token refresh mechanism, and the access to the CRM resources,
+    * returns the raw results (no treatment applied on the results returned by the CRM),
+  * the `EntitiesManager` :
+    * "translates" and maps the raw results into valid Kiamo entities, based on the connector's configuration,
+  * the `CustomizationManager` :
+    * contains all eligibility, sorting, filtering and specific treatments functions, related to the current integration.
+
+
+
+#### Kiamo Connector (Module)
 
 #####   Creation
 
+A Kiamo CRM connector creation must follow all the prerequisites described by the  « `Development of CRM-ERP connectors` » documentation.
+
+
+
+In addition, in order to benefit of the package capabilities and helpers, it must : 
+
+* include the `autoloader`,
+* add a `use` line for each used toolkit tool,
+* extend the `Module` class,
+* instantiate its sub-modules (`InteractionManager`, `EntitiesManager` and `CustomizationManager`).
+
+```php
+namespace <ConnectorNamespace> ;
+
+require_once __DIR__ . "/tools/autoload.php" ;
+
+use <ConnectorNamespace>\Module ;
+
+(...)
+
+class <ConnectorName> extends Module implements KiamoConnectorInterface, (...)
+{
+  (...)
+
+  public function __construct()
+  {
+    parent::__construct() ;
+    $this->interactionMgr    = new InteractionManager(   $this ) ;
+    $this->entitiesMgr       = new EntitiesManager(      $this ) ;
+    $this->customizationMgr  = new CustomizationManager( $this ) ;
+  }
+
+  (...)
+}
+```
+
+The `autoloader` allows not to add one `require` line per tool used. Meanwhile, a `use` is strongly recommended to avoid possible name space collisions.
+
+ When the connector is instantiated, the extended `Module` is initialized with the root path and the module name which is, by default, the class name. Based on this :
+
+* the  `<root>` path, base of the whole module implementation, will be set up,
+* the module name will induce :
+  * the name of the dedicated configuration file (`<root>/conf/u_<ConnectorName>.php`), if this `<ConnectorName>` item is declared in the root configuration file `<root>/conf/_config.php`. The `ConfManager`  will use the module name to automatize the access to the module's configuration.
+  * the creation of a `<root>/logs/<ConnectorName>` folder, where all the module and sub-modules logs will be written and managed,
+  * a simplified management of the module's resources (in the dedicated `<root>/data/<ConnectorName>` folder).
+
+
+
 #####   Configuration
+
+The module configuration is located in the `conf` folder. It's mainly composed of :
+
+* the root configuration files `_config.php` : the `ConfManager` uses this file to know the declared configuration items, and the path to access it.
+* the logger's configuration file `t_logger.php` : it defines the logs level, the logs details and the logger behavior regarding the old logs files.
+* the connector's configuration file `u_<ConnectorName>.php` : this file totally drives the way to access the external CRM, the way the returned data are formed and the way to search and treat those data.
+
+The configuration root file is a php file containing :
+
+```php
+<?php
+return [
+  'tools' => [
+    'key'   => 't',
+    'items' => [
+      'logger',
+    ],
+  ],
+  'user'  => [
+    'key'   => 'u',
+    'items' => [
+      '<ConnectorName>',
+    ],
+  ],
+] ;
+?>
+```
+
+It's loaded by the `ConfManager` and describes the declared configuration items (here, a logger **t**ool and a connector **u**ser files).
+
+If another configuration file is required, either for a tool, a module or a sub-module, it must be declared in this file (otherwise it will not be accessible using the `ConfManager` helper capabilities).
+
+
+
+
+
+
+
+
+
+***SIn ToDo : To Be Continued Here***
+
+
+
+
+
+
+
+
+
+
+
+
+
+Le fichier de configuration du connecteur lui-même se présente sous la forme suivante :
+
+·        bloc self : nom du service externe et version du connecteur
+
+·        bloc protocol : version de l’API de Web Services permettant l’accès au CRM externe
+
+·        bloc environments : liste des environnement CRM (test, preprod, prod, …). Pour chaque environnement :
+
+o   bloc accessdata : toute la configuration nécessaire à l’accès et à l’établissement d’une session : url, clés, jetons de sécurité, …
+
+o   bloc urls : toutes les données nécessaire à la construction des urls permettant l’accès aux ressources du CRM : page de recherche pour une entité donnée (contact, société, …), fiche d’une entrée, etc.
+
+·        bloc entities : contient tout le mapping entre les entités du CRM externe et Kiamo, ainsi que la logique de recherche d’entrées correspondant aux inputs dans Kiamo.
+
+o   bloc map : table de correspondance <entiteCRM> => <entiteKiamo> (ex : ‘Account’ => ‘company’).
+
+o   bloc <kiamoEntityType> : description complète du mapping et des logiques de recherche :
+
+§  bloc labels : toutes les données nécessaires à la construction des labels de l’entité et de ses entrées.
+
+Dans le cas du label d’une entrée, il s’agit d’une concaténation de chaines de caractères (type string) et de valeurs de champs de l’entrée (type field, valeur key interne du champs), séparées par le separator.
+
+Attention : si le script Kiamo comporte plusieurs blocs connecteur s’enchaînant sur des entités différentes, ce sera le label du dernier de ces blocs qui déterminera le label de l’interaction.
+
+§  bloc map : liste de tous les champs formant une entrée, qu’ils soient affiché dans Kiwi ou simplement nécessaires à l’assemblage des données de cet affichage.
+
+Exemple : dans un contact, il n’est pas nécessaire d’afficher l’Id CRM Externe du la société du contact ; mais cet Id est nécessaire à la récupération de cette société, si celle-ci doit aussi être affichée dans Kiwi). Il faut donc la récupérer lors de la récupération des données du contact.
+
+Chaque ligne d’un bloc map correspond à un champs de l’entrée dans le CRM externe. Elle se présente sous la forme :
+
+<crmFieldName> => [ key, label, type, display, map ], où :
+
+·        <crmFieldName> est le nom du champs de l’entrée dans la base CRM,
+
+·        key est le nom de la clé interne, qui sera utilisée par l’échantillon pour décrire ce champs. key peut être une chaine vide, si ce champs n’est pas amené à être manipulé régulièrement par l’implémentation. Les clés internes classiquement utilisées sont id, firstname, lastname, phone, mobile, email, contactId, companyId, ticketId, status, … Le entity manager fournit une méthode facilitant l’accès au champs d’une entrée via cette clé interne ; cela permet d’abstraire les noms des champs externes, variables. Par exemple, la récupération de l’id de toute entrée se fera toujours par la clé ‘id’, quel que soit le nom du champs de l’entité externe correspondante.
+
+·        label : label du champs à afficher dans Kiwi, si ce champs est affiché.
+
+·        type : type de la donnée. Ce type interne sera mappé avec les types Kiamo, influençant l’affichage et les fonctionnalités additionnelles.
+
+Par exemple, un type interne phone sera mappé vers le type Kiamo EntityField::TYPE_PHONE, qui rendra le champs clickable et pourra déclencher un appel depuis Kiwi vers ce numéro.
+
+Les types internes principaux sont id, string, phone, email, date, datetime, time, birthday, text.
+
+·        display : booléen signalant si ce champs doit être affiché dans Kiwi, ou pas.
+
+·        map : nom de la variable Kiamo dans laquelle doit être mappée la valeur du champs. Ce nom peut bien entendu rester vide.
+
+§  bloc search : ce bloc décrit la logique de recherche d’entrées correspondant aux inputs de Kiamo. Dans l’échantillon, l’implémentation de ces logiques est présente dans le connecteur CRM Kiamo. Il y a deux types de recherche, et une méthode additionnelle :
+
+·        recherche kiamoInput : il s’agit d’une recherche lancée à partir du ParameterBag de Kiamo. Ce sac de paramètres est rempli par les inputs ayant déclenché l’interaction, puis l’appel au connecteur à travers le script voix, mail, … où est positionné le bloc connecteur. Il peut être enrichi tout au long de la traversée du script.
+
+Typiquement, le ParameterBag contiendra initialement un numéro de téléphone entrant, dans le cadre d’un appel client.
+
+Ce bloc contient un certain nombre de lignes. Chaque ligne sera traitée dans l’ordre, de la première à la dernière, excluant les suivantes en cas de résultat positif, et correspondra à l’étude du contenu d’une variable du ParameterBag, et d’un appel à un Web Service du CRM externe pour vérifier si des entrées correspondent à ce paramètre.
+
+Exemple :
+
+Une première ligne pourrait vérifier si le CustNumber du ParameterBag contient un numéro de téléphone, et appelle le Web Service externe pour vérifier si une entrée du CRM contient un champs « téléphone fixe » correspondant à ce numéro. 
+
+Une deuxième ligne pourrait vérifier la correspondance entre ce même paramètre et le champs « téléphone mobile ». 
+
+Enfin une troisième ligne effectuerait une vérification comparable sur la base du EMailSender du ParameterBag.
+
+Chaque ligne contient une array composée des champs suivants :
+
+o   varName : nom de la variable du ParameterBag
+
+o   entityField : clé interne d’un champs de l’entité, correspondant à un champs externe.
+
+o   operation : clé / nom de l’opération de recherche dans le CRM externe. Par exemple like ou equals, pour des requêtes typées SQL.
+
+o   preTrt : pré-traitement à effectuer sur la valeur de la variable passée brute.
+
+Par exemple, si l’on sait que les numéros entrant sont mal formattés mais qu’ils sont tous représentés de la même manière dans le CRM externe, on passera une fonction de pré-traitement sur les inputs bruts pour ajuster leur format à une recherche correcte dans le CRM externe.
+
+Ce champs peut rester vide si aucun pré-traitement n’est nécessaire.
+
+Si le champs n’est pas vide, il doit correspondre au nom d’une méthode de pré-traitement implémentée dans le Customization Manager.
+
+o   eligibility : méthode appelée sur la donnée brute éventuellement pré-traitée, pour déterminer si l’input est éligible ou non à un type de recherche donné, et ainsi éviter des appels inutiles vers le CRM externe.
+
+Par exemple, il est inutile d’effectuer une recherche via un numéro de téléphone si la chaine de caractères passée contient des lettres.
+
+Ce champs peut rester vide si aucune vérification d’éligibilité n’est nécessaire.
+
+Si le champs n’est pas vide, il doit correspondre au nom d’une méthode d’éligibilité implémentée dans le Customization Manager.
+
+o   postTrt : post-traitement à effectuer sur le résultat de la recherche, dans le cadre d’une recherche sur ce champs précis.
+
+Par exemple, si on a cherché une correspondance partielle sur un numéro de téléphone dont on ne connaissait qu’une partie, et que plusieurs résultats sont retournés, il peut être intéressant de déterminer la meilleure correspondance via l’exécution d’un post-traitement dédié.
+
+Ce champs peut rester vide si aucun post-traitement n’est nécessaire.
+
+Si le champs n’est pas vide, il doit correspondre au nom d’une méthode de post-traitement implémentée dans le Customization Manager.
+
+·        recherche agentQuery :
+
+Il s’agit exactement de la même logique que le bloc kiamoInput précédent, sauf :
+
+o   que cette logique sera appliquée aux recherches manuelles des agents sur des entités données (bouton « Rechercher » de Kiwi), par chaine de caractère dont on ne connait donc, par nature, pas d’avance le type, et qui peut être partielle.
+
+o   qu’il n’y a pas de champs « varName », vu que la variable est toujours la chaine de recherche manuelle.
+
+Pour le reste, tout fonctionne à l’identique des recherches de type kiamoInput.
+
+·        fonction additionnelle getOneOfList : il s’agit de la fonction par défaut, si une recherche (de tout type) a renvoyé une liste d’éléments et que Kiamo n’en attend qu’un seul.
+
+Par défaut, si cette chaine reste vide, c’est simplement le premier élément de la liste qui sera renvoyé.
+
+Si la chaine n’est pas vide, elle devra correspondre au nom d’une méthode de filtre sur une liste d’entrées correspondantes, implémentée par le sous-module Customization Manager.
+
+Cette méthode sera appliquée après tout post-traitement effectué sur le résultat d’une recherche, le cas échéant.
+
+
 
 #####   Module Logs
 
