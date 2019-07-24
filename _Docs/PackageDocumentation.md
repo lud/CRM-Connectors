@@ -71,9 +71,9 @@ The sample code and structure are quite easy to read and understand. The documen
 
 <u>Note</u> : in this document and the related code, the following notions will be used :
 
-* `entity`, an entity representing a kind of item. For instance "contact", "company", "user's ticket", ...
+* `entity`, an entity representing a kind of item. *For instance* "contact", "company", "user's ticket", ...
 
-* `entry`, an entity instance. For instance, the data block describing the "contact" M. Winston Churchill.
+* `entry`, an entity instance. *For instance*, the data block describing the "contact" M. Winston Churchill.
 
 These two notions are used this way in all the connector samples, but are different of the ones present on the Kiamo connector function names.
 
@@ -150,7 +150,7 @@ In more details, the design of those samples is split in 3 main parts :
 
     * the `CustomizationManager` :  this class is dedicated to any specific treatment implementation required by the current integration, and the standard / default treatments easing the input / output manipulations.
 
-      For instance, we'll find here *eligibility methods* (for example, a string with letters cannot be a phone number ; it's relevant not to call the external API to search entries by phone number with such string), *pre-treatments* (for example, remove all the space from an input phone number, or format it as it's stored in the external database), *post-treatments* (most relevant item of a returned list, as opened tickets for example), etc.
+      *For instance*, we'll find here *eligibility methods* (for example, a string with letters cannot be a phone number ; it's relevant not to call the external API to search entries by phone number with such string), *pre-treatments* (for example, remove all the space from an input phone number, or format it as it's stored in the external database), *post-treatments* (most relevant item of a returned list, as opened tickets for example), etc.
 
     Those sub-modules benefit of the helper instances of the parent module, as the configuration manager, the logs manager, ...
 
@@ -278,141 +278,152 @@ It's loaded by the `ConfManager` and describes the declared configuration items 
 
 If another configuration file is required, either for a tool, a module or a sub-module, it must be declared in this file (otherwise it will not be accessible using the `ConfManager` helper capabilities).
 
+See [ConfManager](#confManager) for further details.
 
 
 
+The connector's configuration file format is the following :
 
+* `self` block : connector description (name of the external service, connector version, ...),
 
+* `protocol` block : external Web Service API description (version, ...),
 
+* `environments` block : CRM environment list (test, preprod, prod, …). For each environment :
+  * `accessdata` block : all the date required to access the environment and generate a session (url, key, credentials, security tokens, …),
+  * `urls` block : all the data required to build the urls allowing the environment resource access (search page for each entity, entry page, ...).
 
+* `entities` block: complete mapping between the CRM entities and Kiamo (field by field), and search algorithm description (which criteria is used in priority to search a match).
 
-***SIn ToDo : To Be Continued Here***
+  * `map` block : map table `<CRMEntity> => <KiamoEntity>` (*for instance* : `‘Account’ => ‘company’`).
 
+  * `<kiamoEntityType>` block : complete description of the mapping and the search logic :
 
+    * `labels` block: all the data required to build the entity / entries labels :
 
+      The label of an entry is a concatenation of raw strings and fields values, each item being joined by the separator string.
 
+      ***Warning*** : if several connector blocks are used in the Kiamo SVI script (one per entity, usually), the interaction label will be the label built by the last one of them.
 
+    * `map` block : list of all the fields composing an entry, whatever displayed on Kiwi or simply required to assemble the displayed data.
 
+      *Example* : it's not necessary to display the internal customer Id in the agent GUI ; but this id is required to get related company or ticket entries. So it's necessary to get it while requesting the customer data.
 
+      Each `map` block line  corresponds to one of the external CRM entry field. It's formatted the following way : `<crmFieldName> => [ key, label, type, display, map ]`, where :
 
+      * `<crmFieldName>` is the entry field name in the CRM database.
 
+      * `key` is the intenal key name, which will be used by the connector sample to describe and access this field.
 
+        If `key` is empty, it means it's not often used by the implementation. The typical internal keys are `id`, `firstname`, `lastname`, `phone`, `mobile`, `email`, `contactId`, `companyId`, `ticketId`, `status`, …
 
+        The entity manager provides a method easing the access to an entry field value through this internal key, which is a way to abstract the external CRM names and help the developer to focus on the main data through simple and direct keys.
 
+        *For instance*, the `id` of any entry will always be accessed internally using `id` as key, even if the external CRM fields are respectively `ContactId`, `CompanyId`, `TicketId`, ...
 
-Le fichier de configuration du connecteur lui-même se présente sous la forme suivante :
+      * `label` : label of the field to display on Kiwi (if displayed).
 
-·        bloc self : nom du service externe et version du connecteur
+      * `type` : internal data type. This type will be mapped with the internal Kiamo types, in order to improve the display and add additional features on the agent interface.
 
-·        bloc protocol : version de l’API de Web Services permettant l’accès au CRM externe
+        *For instance* a `phone` type will be mapped into the Kiamo `EntityField::TYPE_PHONE` type. On Kiwi, this field will be formatted as a phone number and enriched by a click to call capability.
 
-·        bloc environments : liste des environnement CRM (test, preprod, prod, …). Pour chaque environnement :
+        The main internal type are `id`, `string`, `phone`, `email`, `date`, `datetime`, `time`, `birthday`, `text`.
 
-o   bloc accessdata : toute la configuration nécessaire à l’accès et à l’établissement d’une session : url, clés, jetons de sécurité, …
+      * `display` : boolean driving if this field must be displayed or not, on the agent interface.
 
-o   bloc urls : toutes les données nécessaire à la construction des urls permettant l’accès aux ressources du CRM : page de recherche pour une entité donnée (contact, société, …), fiche d’une entrée, etc.
+      * `map` : Kiamo Cross Canal variable name where the value of this field must be mapped. This mapping is of course optional, `map` can be empty.
 
-·        bloc entities : contient tout le mapping entre les entités du CRM externe et Kiamo, ainsi que la logique de recherche d’entrées correspondant aux inputs dans Kiamo.
+    * `search` block : this block describes the search algorithm.
 
-o   bloc map : table de correspondance <entiteCRM> => <entiteKiamo> (ex : ‘Account’ => ‘company’).
+      The data of this block are used by the sample implementation while searching entries matching the Kiamo inputs. There are two kinds of search logics, and one additional method :
 
-o   bloc <kiamoEntityType> : description complète du mapping et des logiques de recherche :
+      * `kiamoInput` search :
 
-§  bloc labels : toutes les données nécessaires à la construction des labels de l’entité et de ses entrées.
+        It's an entries search based on the Kiamo `ParameterBag`.
 
-Dans le cas du label d’une entrée, il s’agit d’une concaténation de chaines de caractères (type string) et de valeurs de champs de l’entrée (type field, valeur key interne du champs), séparées par le separator.
+        The `ParameterBag` is filled with the interaction inputs (as the phone number related to an customer call, the email address related to a received email, ...), and other data added during the Kiamo SVI script execution.
 
-Attention : si le script Kiamo comporte plusieurs blocs connecteur s’enchaînant sur des entités différentes, ce sera le label du dernier de ces blocs qui déterminera le label de l’interaction.
+        The `kiamoInput` search block is composed of lines, the first one executed before the second and so on. Each line correspond to an attempt to find match(es) between the input data and the external CRM database, based on a given entity field. As soon as at least one match is found, the search is over and the match returned.
 
-§  bloc map : liste de tous les champs formant une entrée, qu’ils soient affiché dans Kiwi ou simplement nécessaires à l’assemblage des données de cet affichage.
+        *For example* :
 
-Exemple : dans un contact, il n’est pas nécessaire d’afficher l’Id CRM Externe du la société du contact ; mais cet Id est nécessaire à la récupération de cette société, si celle-ci doit aussi être affichée dans Kiwi). Il faut donc la récupérer lors de la récupération des données du contact.
+        > <u>Line #1</u> : use the `ParameterBag` `CustNumber`. Check if not empty, check if valid phone number, then search a match calling the external Web Service API, on the *fix phone number*.
+        >
+        > <u>Line #2</u> : use the same parameter, but this time looking for matches on the *mobile phone number*.
+        >
+        > <u>Line #3</u> : `ParameterBag` `EMailSender`, on the external *email address*.
+        >
+        > (...)
 
-Chaque ligne d’un bloc map correspond à un champs de l’entrée dans le CRM externe. Elle se présente sous la forme :
+        Each line is composed of the following fields (which can remain empty if not required) :
 
-<crmFieldName> => [ key, label, type, display, map ], où :
+        * `varName` : name of the `ParameterBag` variable,
 
-·        <crmFieldName> est le nom du champs de l’entrée dans la base CRM,
+        * `entityField` : entity internal field key, corresponding to an external field,
 
-·        key est le nom de la clé interne, qui sera utilisée par l’échantillon pour décrire ce champs. key peut être une chaine vide, si ce champs n’est pas amené à être manipulé régulièrement par l’implémentation. Les clés internes classiquement utilisées sont id, firstname, lastname, phone, mobile, email, contactId, companyId, ticketId, status, … Le entity manager fournit une méthode facilitant l’accès au champs d’une entrée via cette clé interne ; cela permet d’abstraire les noms des champs externes, variables. Par exemple, la récupération de l’id de toute entrée se fera toujours par la clé ‘id’, quel que soit le nom du champs de l’entité externe correspondante.
+        * `operation` : internal name (key) of the search operation in the external CRM. *For instance* `like` or `equals` for SQL like requests,
 
-·        label : label du champs à afficher dans Kiwi, si ce champs est affiché.
+        * `preTrt` : pre treatment to apply on the raw input data.
 
-·        type : type de la donnée. Ce type interne sera mappé avec les types Kiamo, influençant l’affichage et les fonctionnalités additionnelles.
+          *For example*, it's usual that phone numbers are not received formatted the exact same way than they are stored on the external CRM database. A typical phone number pre treatment could be to remove all spaces, country prefix, and so on.
 
-Par exemple, un type interne phone sera mappé vers le type Kiamo EntityField::TYPE_PHONE, qui rendra le champs clickable et pourra déclencher un appel depuis Kiwi vers ce numéro.
+          This field can be empty if no pre treatment is required.
 
-Les types internes principaux sont id, string, phone, email, date, datetime, time, birthday, text.
+          If not empty, it must be filled with the name (case sensitive) of a pre treatment method implemented in the `CustomizationManager` (either already provided in the current package, or implemented for a specific integration).
 
-·        display : booléen signalant si ce champs doit être affiché dans Kiwi, ou pas.
+        * `eligibility` : method applied on the raw (or pre treated) input to check if the input is relevant in a given search context (and avoid useless external CRM requests otherwise).
 
-·        map : nom de la variable Kiamo dans laquelle doit être mappée la valeur du champs. Ce nom peut bien entendu rester vide.
+          *For example*, it's no use to request a search on a *phone number* field  if the input contains alphabetic characters.
 
-§  bloc search : ce bloc décrit la logique de recherche d’entrées correspondant aux inputs de Kiamo. Dans l’échantillon, l’implémentation de ces logiques est présente dans le connecteur CRM Kiamo. Il y a deux types de recherche, et une méthode additionnelle :
+          Can be empty, or present in the `CustomizationManager`.
 
-·        recherche kiamoInput : il s’agit d’une recherche lancée à partir du ParameterBag de Kiamo. Ce sac de paramètres est rempli par les inputs ayant déclenché l’interaction, puis l’appel au connecteur à travers le script voix, mail, … où est positionné le bloc connecteur. Il peut être enrichi tout au long de la traversée du script.
+        * `postTrt` : post treatment to be applied on the matching results.
 
-Typiquement, le ParameterBag contiendra initialement un numéro de téléphone entrant, dans le cadre d’un appel client.
+          *For example*, to find the better match if several entries are returned for a given search (and only one expected to be displayed on the agent GUI).
 
-Ce bloc contient un certain nombre de lignes. Chaque ligne sera traitée dans l’ordre, de la première à la dernière, excluant les suivantes en cas de résultat positif, et correspondra à l’étude du contenu d’une variable du ParameterBag, et d’un appel à un Web Service du CRM externe pour vérifier si des entrées correspondent à ce paramètre.
+          Can be empty, or present in the `CustomizationManager`.
 
-Exemple :
+      * `agentQuery` search :
 
-Une première ligne pourrait vérifier si le CustNumber du ParameterBag contient un numéro de téléphone, et appelle le Web Service externe pour vérifier si une entrée du CRM contient un champs « téléphone fixe » correspondant à ce numéro. 
+        It's exactly the same logic of the `kiamoInput` search block, excepted that :
 
-Une deuxième ligne pourrait vérifier la correspondance entre ce même paramètre et le champs « téléphone mobile ». 
+        * this logic is applied on the manual agent search queries (`Search` button on Kiwi), meaning that we have a string, possibly partial, and of unknown type.
+        * there is no `varName`, the variable is the search manual input string.
 
-Enfin une troisième ligne effectuerait une vérification comparable sur la base du EMailSender du ParameterBag.
+        Otherwise, the applied algorithm and behavior is the same than the `kiamoInput` one.
 
-Chaque ligne contient une array composée des champs suivants :
+      * `getOneOfList`additionnal function:
 
-o   varName : nom de la variable du ParameterBag
+        It's the default function applied if several entries are returned and only one is expected by Kiamo.
 
-o   entityField : clé interne d’un champs de l’entité, correspondant à un champs externe.
+        If this variable remains empty, by default the first item of the returned list will be picked up.
 
-o   operation : clé / nom de l’opération de recherche dans le CRM externe. Par exemple like ou equals, pour des requêtes typées SQL.
+        Otherwise, it must correspond to the name of a method implemented on the `CustomizationManager`.
 
-o   preTrt : pré-traitement à effectuer sur la valeur de la variable passée brute.
+        ***Important*** :  this method is called AFTER any post treatment, if present.
 
-Par exemple, si l’on sait que les numéros entrant sont mal formattés mais qu’ils sont tous représentés de la même manière dans le CRM externe, on passera une fonction de pré-traitement sur les inputs bruts pour ajuster leur format à une recherche correcte dans le CRM externe.
 
-Ce champs peut rester vide si aucun pré-traitement n’est nécessaire.
 
-Si le champs n’est pas vide, il doit correspondre au nom d’une méthode de pré-traitement implémentée dans le Customization Manager.
 
-o   eligibility : méthode appelée sur la donnée brute éventuellement pré-traitée, pour déterminer si l’input est éligible ou non à un type de recherche donné, et ainsi éviter des appels inutiles vers le CRM externe.
 
-Par exemple, il est inutile d’effectuer une recherche via un numéro de téléphone si la chaine de caractères passée contient des lettres.
 
-Ce champs peut rester vide si aucune vérification d’éligibilité n’est nécessaire.
 
-Si le champs n’est pas vide, il doit correspondre au nom d’une méthode d’éligibilité implémentée dans le Customization Manager.
 
-o   postTrt : post-traitement à effectuer sur le résultat de la recherche, dans le cadre d’une recherche sur ce champs précis.
 
-Par exemple, si on a cherché une correspondance partielle sur un numéro de téléphone dont on ne connaissait qu’une partie, et que plusieurs résultats sont retournés, il peut être intéressant de déterminer la meilleure correspondance via l’exécution d’un post-traitement dédié.
 
-Ce champs peut rester vide si aucun post-traitement n’est nécessaire.
 
-Si le champs n’est pas vide, il doit correspondre au nom d’une méthode de post-traitement implémentée dans le Customization Manager.
+***... SIn ToDo : restart here ...***
 
-·        recherche agentQuery :
 
-Il s’agit exactement de la même logique que le bloc kiamoInput précédent, sauf :
 
-o   que cette logique sera appliquée aux recherches manuelles des agents sur des entités données (bouton « Rechercher » de Kiwi), par chaine de caractère dont on ne connait donc, par nature, pas d’avance le type, et qui peut être partielle.
 
-o   qu’il n’y a pas de champs « varName », vu que la variable est toujours la chaine de recherche manuelle.
 
-Pour le reste, tout fonctionne à l’identique des recherches de type kiamoInput.
 
-·        fonction additionnelle getOneOfList : il s’agit de la fonction par défaut, si une recherche (de tout type) a renvoyé une liste d’éléments et que Kiamo n’en attend qu’un seul.
 
-Par défaut, si cette chaine reste vide, c’est simplement le premier élément de la liste qui sera renvoyé.
 
-Si la chaine n’est pas vide, elle devra correspondre au nom d’une méthode de filtre sur une liste d’entrées correspondantes, implémentée par le sous-module Customization Manager.
 
-Cette méthode sera appliquée après tout post-traitement effectué sur le résultat d’une recherche, le cas échéant.
+
+
+
 
 
 
