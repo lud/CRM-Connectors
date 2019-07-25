@@ -1,12 +1,12 @@
-# Kiamo Messaging Connector Samples
+# Kiamo CRM Connector Samples
 
-## Design
+## Package Description
 
 
 
-| Date    | 20190722  |
+| Date    | 20190725  |
 | :------ | --------- |
-| Version | v1.2.0    |
+| Version | v1.3.0    |
 | Author  | S.Iniesta |
 
 
@@ -14,14 +14,81 @@
 ------
 
 
-[TOC]
+[Introduction](#introduction)
+
+&nbsp;&nbsp;&nbsp;&nbsp;[Purpose](#purpose)
+
+&nbsp;&nbsp;&nbsp;&nbsp;[Description](#description)
+
+[Design](#design)
+
+[Connector](#connector)
+
+&nbsp;&nbsp;&nbsp;&nbsp;[Kiamo Connector (Module)](#kiamoConnector(module))
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Creation](#creation)
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Configuration](#configuration)
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Module Logs](#moduleLogs)
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Module Resources](#moduleResources)
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Usage](#usage)
+
+&nbsp;&nbsp;&nbsp;&nbsp;[Interaction Manager (SubModule)](#interactionManager(submodule))
+
+&nbsp;&nbsp;&nbsp;&nbsp;[Entities Manager (SubModule)](#entitiesManager(submodule))
+
+&nbsp;&nbsp;&nbsp;&nbsp;[Customization Manager (SubModule)](#customizationManager(submodule))
+
+[Main Helpers](#mainHelpers)
+
+&nbsp;&nbsp;&nbsp;&nbsp;[AutoLoader](#autoloader)
+
+&nbsp;&nbsp;&nbsp;&nbsp;[Module](#module)
+
+&nbsp;&nbsp;&nbsp;&nbsp;[ConfManager](#confmanager)
+
+&nbsp;&nbsp;&nbsp;&nbsp;[Logger](#logger)
+
+&nbsp;&nbsp;&nbsp;&nbsp;[SubModule](#submodule)
+
+[Tools](#tools)
+
+&nbsp;&nbsp;&nbsp;&nbsp;[datetimes](#datetimes)
+
+&nbsp;&nbsp;&nbsp;&nbsp;[dict](#dict)
+
+&nbsp;&nbsp;&nbsp;&nbsp;[files](#files)
+
+&nbsp;&nbsp;&nbsp;&nbsp;[resources](#resources)
+
+&nbsp;&nbsp;&nbsp;&nbsp;[strings](#strings)
+
+&nbsp;&nbsp;&nbsp;&nbsp;[userdata](#userdata)
+
+&nbsp;&nbsp;&nbsp;&nbsp;[uuids](#uuids)
+
+&nbsp;&nbsp;&nbsp;&nbsp;[webs](#webs)
+
+[Additional Tools](#additionalTools)
+
+&nbsp;&nbsp;&nbsp;&nbsp;[Command Line Tester](#commandLineTester)
+
+&nbsp;&nbsp;&nbsp;&nbsp;[Connector Checker](#connectorChecker)
+
+&nbsp;&nbsp;&nbsp;&nbsp;[SVI Script Examples](#sviScriptExamples)
+
 
 ------
 
 
 
+<a name="introduction"></a>
 ### Introduction
 
+<a name="purpose"></a>
 ####  Purpose
 
 The goal of this package is to provide CRM Connector Samples to a development team, based on a very simple design, with an integrated and extensible toolkit, and several implementation helpers.
@@ -30,6 +97,7 @@ Each sample can be used as a simple illustration, or as support to a more specif
 
 
 
+<a name="description"></a>
 ####  Description
 
 The following scheme presents a synthetic design of a Kiamo CRM Connector :
@@ -59,13 +127,13 @@ Each  sample manages the connection with a specific external CRM.
 
 The reference Kiamo documentation to implement a connector is unchanged : « `Development of CRM-ERP connectors` ».
 
- 
+
 
 The Kiamo deployment folder for a connector is :
 
 `<Kiamo Folder>/data/userfiles/class/Connectors/<ConnectorName>`
 
- 
+
 
 The sample code and structure are quite easy to read and understand. The documentation provides additional details to understand the global idea and implementation particularities, for a better appropriation.
 
@@ -77,7 +145,7 @@ The sample code and structure are quite easy to read and understand. The documen
 
 These two notions are used this way in all the connector samples, but are different of the ones present on the Kiamo connector function names.
 
- 
+
 
 The current CRM connector samples (may 2019) are the following :
 
@@ -91,6 +159,7 @@ The current CRM connector samples (may 2019) are the following :
 
 ------
 
+<a name="design"></a>
 ### Design
 
 The following scheme presents the typical architecture of a connector sample :
@@ -173,6 +242,7 @@ It's of course possible to modify and extend this toolkit for any further need.
 
 
 
+<a name="connector"></a>
 ### Connector
 
 A Kiamo CRM connector can be implemented in one and only class.
@@ -193,15 +263,17 @@ In those samples, the implementation is split between a main module, the connect
 
 
 
+<a name="kiamoConnector(module)"></a>
 #### Kiamo Connector (Module)
 
+<a name="creation"></a>
 #####   Creation
 
 A Kiamo CRM connector creation must follow all the prerequisites described by the  « `Development of CRM-ERP connectors` » documentation.
 
 
 
-In addition, in order to benefit of the package capabilities and helpers, it must : 
+In addition, in order to benefit of the package capabilities and helpers, it must :
 
 * include the `autoloader`,
 * add a `use` line for each used toolkit tool,
@@ -245,6 +317,7 @@ The `autoloader` allows not to add one `require` line per tool used. Meanwhile, 
 
 
 
+<a name="configuration"></a>
 #####   Configuration
 
 The module configuration is located in the `conf` folder. It's mainly composed of :
@@ -403,47 +476,220 @@ The connector's configuration file format is the following :
 
 
 
-
-
-
-
-
-
-
-
-***... SIn ToDo : restart here ...***
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+<a name="moduleLogs"></a>
 #####   Module Logs
 
+The module logs are written in the folder `<root>/logs/<ConnectorName>`.
+
+The global logs configuration is defined in the file `<root>/conf/t_logger.php`.
+
+The configuration defines the logs level and allows the older logs to be zipped or deleter.
+
+See [Logger](#logger) for further details.
+
+
+
+<a name="moduleResources"></a>
 #####   Module Resources
 
+To benefit of the resource tool helper capabilities, the resources of the module must be stored in the folder `<root>/data/<ConnectorName>`.
+
+See [Resources](#resources) for further details.
+
+
+
+<a name="usage"></a>
 #####   Usage
 
+The connector class extends the `Module` class, which provides the `Logger` and `ConfManager` capabilities :
+
+* `Logger` :
+  * `Logs` :
+
+    Anywhere in any `Module` or `SubModule` code the `Logger` can be used :
+
+    ```php
+    $this->log( "---------", Logger::LOG_INFO, __METHOD__ ) ;
+    $this->log( "INIT : OK", Logger::LOG_INFO, __METHOD__ ) ;
+    ```
+
+    The logs lines are appended in the file `<root>/logs/<ConnectorName>/<YYYYMMDD>.log` as following :
+
+    ```verilog
+    [20190429_102557][INFO ][             ][Logger::__construct ] ---------
+    [20190429_102557][INFO ][             ][Logger::__construct ] INIT : OK
+    ```
+
+    where :
+
+    - block #1 : datetime,
+
+    - block #2 : level,
+
+    - block #3 : `actionId`,
+
+    - block #4 : origine module and method,
+
+    - log.
+
+
+
+  * `actionId` :
+
+    The purpose setting such an `actionId` is to ease the logs reading / search.
+
+    A log section can be decorated with an `actionId`, auto generated or provided by a specific implementation.
+
+    The section must simply start and end with the `actionId` dedicated methods :
+
+    ```php
+    $this->setActionId() ;
+    $this->log( "Log #01", Logger::LOG_INFO, __METHOD__ ) ;
+    $this->log( "Log #02", Logger::LOG_INFO, __METHOD__ ) ;
+    $this->clearActionId() ;
+    ```
+
+    The corresponding log lines are :
+
+    ```verilog
+    [20190429_102557][INFO ][5bd6d225ccee2][Logger::__construct ] Log #01
+    [20190429_102557][INFO ][5bd6d225ccee2][Logger::__construct ] Log #02
+    ```
+
+    When relevant, the `actionId` can be specific :
+
+    ```php
+    $myId = (...)
+    $this->setActionId( $myId ) ;
+    $this->log( "Log #01", Logger::LOG_INFO, __METHOD__ ) ;
+    $this->log( "Log #02", Logger::LOG_INFO, __METHOD__ ) ;
+    $this->clearActionId() ;
+    ```
+
+
+
+* `ConfManager` :
+
+  * Module configuration :
+
+    Any configuration item can be accessed, anywhere on a `Module` or `SubModule` using the `getConf` method :
+
+    ```php
+    $var = $this->getConf( 'server.port' ) ;
+    ```
+
+    The item will automatically be read from the `<root>/conf/u_<ConnectorName>.php` configuration file. This file is only read on time, the first time any configuration item is accessed. It's loaded and remains in RAM after that.
+
+
+
+  * Other configuration :
+
+    Accessing any other configuration file / item is done using the `getGlobalConf` method :
+
+    ```php
+    $var = $this->getGlobalConf( 'tools.logger.behavior.dateFormat' ) ;
+    ```
+
+    In such case, the `ConfManager` follows the configuration path starting on the root configuration file `_config.php`. In the previous example, `tools` => `logger` => `behavior.dateFormat`.
+
+    Using the same logic we could have accessed a connector's configuration item :
+
+    ```php
+    $var = $this->getGlobalConf( 'user.<ConnectorName>.self.name' ) ;
+    ```
+
+
+
+<a name="interactionManager(submodule)"></a>
 ####  Interaction Manager (SubModule)
 
+This sub module manages all the interactions with the external CRM.
+
+In the samples, the main methods implemented are :
+
+* the two main search methods :
+
+  * `getSingleEntry` : requests an entry from the external CRM, based on :
+    * the entity type,
+    * the entry id.
+  * `getEntriesList` : gets n entries from the external CRM, based on :
+    * the entity type,
+    * the entity search field,
+    * the search value (complete or partial),
+    * the search operation (as `like`, `equals,` ... in SQL like requests),
+    * the list of the entity fields required.
+
+  Those two methods will automatically use the internal `InteractionManager` mechanisms to have and if necessary renew the external API access authorization.
+
+  Those two methods return raw data as returned by the external API. The connector implementation will manage the way those methods are called, and the `EntitiesManager` will manage the mapping between the external data format and the format expected by Kiamo.
+
+* the API access authorization management, usually though a session token. In such case it will :
+
+  * implement the session token request and renewal,
+
+  * the token storage, which be used for each request until it's expired.
+
+
+
+<a name="entitiesManager(submodule)"></a>
 ####  Entities Manager (SubModule)
 
+This sub module manages the mapping between the data returned by the external CRM APIs, and the Kiamo entities, based on the connector's configuration.
+
+In the samples, the main implemented methods are :
+
+* the two main mapping methods :
+
+  * `getEntryInstance` : based on the entity type and a raw entry returned by an external CRM API, builds a Kiamo entity.
+  * `getEntriesCollection` : same thing than the previous method, for an entries list.
+
+* the methods required by the Kiamo connector :
+
+  * `getEntityLayout` : returns a Kiamo entity pattern, composed of a fields list and some additional data,
+  * `getEntitiesSearchUrl` : builds the entities search page URL, on the external CRM,
+  * `getEntryExternalUrl` : builds external CRM entry page URL,
+  * `getEntryLabel` : builds a given entry label (used as synthetic display on Kiwi),
+
+* several configuration entry points access shortcuts, and the mapping between the internal keys, the external CRM field names and the Kiamo types.
+
+
+
+<a name="customizationManager(submodule)"></a>
 ####  Customization Manager (SubModule)
 
-------
+The `CustomizationManager` sub module manages :
 
+* the inputs eligibilities methods :
+
+  Those methods parse the inputs and check whether they are eligible or not to a search on a given data type (as a phone number, a name, an email address, ...).
+
+  The goal is to avoid useless requests to the external CRM.
+
+* the inputs pre treatment methods, and the CRM responses post treatment methods :
+
+  * The goal of the pre treatment methods is to format the input a proper way, in order they can match the external CRM data.
+
+    *Example* : add a space character every two digits on a 10 digits input phone number.
+
+  * The goal of the post treatment methods is to apply a treatment on a raw returned list of entries.
+
+    *For instance*, enrich, sort, filter, choose the most relevant items, ..., of the returned list.
+
+* `n => 1` list filters :
+
+  Those methods are required when several matches can be returned by an API, and Kiamo expects only one result entry (ideally we have to select the most relevant, if possible).
+
+  *For instance*, selection of the most relevant ticket of a given customer (older opened OR newer closed, or any other algorithm).
+
+* any specific method required by the current integration.
+
+
+
+<a name="mainHelpers"></a>
 ### Main Helpers
 
 
+<a name="autoloader"></a>
 ####  AutoLoader
 
 An auto loader is provided to ease the tools loading. Any `Module`, `SubModule` or class willing to use the toolkit should include the following line :
@@ -466,6 +712,7 @@ An auto loader is provided to ease the tools loading. Any `Module`, `SubModule` 
 
 
 
+<a name="module"></a>
 ####  Module
 
 A `Module` is a class which purpose is to provide to a extending class all the main capabilities a module could need, as a Logger or a Configuration Manager for instance.
@@ -528,6 +775,7 @@ class MyClass extends Module
 
 
 
+<a name="confmanager"></a>
 ####  ConfManager
 
 The `ConfManager` class does not have to be described in detail.
@@ -554,6 +802,7 @@ This class is an helper to manage and access the package configuration :
 
 
 
+<a name="logger"></a>
 ####  Logger
 
 The `Logger` class does not have to be described in detail.
@@ -631,6 +880,7 @@ where :
 
 
 
+<a name="submodule"></a>
 ####  SubModule
 
 The purpose of a sub module is to provide a consistent set of features (database access, web service interface, …) to a main module.
@@ -678,8 +928,10 @@ class MySubModule extends SubModule
 
 -----
 
+<a name="tools"></a>
 ### Tools
 
+<a name="datetimes"></a>
 ####  datetimes
 
 The `datetimes` lib provides a set of functions to manipulate and convert dates, times, formats, timestamps in second, millis, …
@@ -690,6 +942,7 @@ The main features are date / time generation, conversions, operations, compariso
 
 
 
+<a name="dict"></a>
 ####  dict
 
 The `dict` lib provides the `Dict` class, which is a quite complete `key => value` array manipulation helper, where value is either a raw data or a sub tree.
@@ -755,6 +1008,7 @@ In addition, the lib provide common `Dict` features :
 
 
 
+<a name="files"></a>
 ####  files
 
 `files` defines the static class `Files`, easing files manipulations :
@@ -771,6 +1025,7 @@ In addition, the lib provide common `Dict` features :
 
 
 
+<a name="resources"></a>
 ####  resources
 
 The static class `Resources` provides, globally, the same features of the `Files` class.
@@ -783,6 +1038,7 @@ The purpose of the `Resources` class is to manipulate `Module` or `SubModule` re
 
 
 
+<a name="strings"></a>
 ####  strings
 
 This static class provides basic string manipulation features.
@@ -800,6 +1056,7 @@ This static class provides basic string manipulation features.
 
 
 
+<a name="userdata"></a>
 ####  userdata
 
 This static class `UserData` eases the user data manipulation, as phone numbers, email addresses, …
@@ -815,6 +1072,7 @@ This static class `UserData` eases the user data manipulation, as phone numbers,
 
 
 
+<a name="uuids"></a>
 ####  uuids
 
 Static class `Uuids`, generating uniq ids.
@@ -827,6 +1085,7 @@ Static class `Uuids`, generating uniq ids.
 
 
 
+<a name="webs"></a>
 ####  webs
 
 Static REST requests helper, based on curl.
@@ -834,13 +1093,14 @@ Static REST requests helper, based on curl.
 * `restRequest( $url, $data = null, $header = null, $authData = null, $verbose = false )` :
 
   returns `[ okFlag, curl_error, http_code, jsonResponse ]`
-  
+
   * if `$data` is not `null` the request is a `POST`, otherwise a `GET`.
 
 
 
 ------
 
+<a name="additionalTools"></a>
 ### Additional Tools
 
 In addition to the package structure and the standard tools and helpers, a Command Line Test Helper is provided.
@@ -849,6 +1109,7 @@ In addition to the package structure and the standard tools and helpers, a Comma
 
 
 
+<a name="commandLineTester"></a>
 ####  Command Line Tester
 
 It’s a file provided with each sample package : `CommandLineTester.php`
@@ -869,6 +1130,7 @@ The tested `Module` and/or `SubModule` instances are created while the `CommandL
 
 Most of the time the sample package’s `CommandLineTester` contains the key tests used to verify the proper implementation behavior (authentication, single API request, user data management, …).
 
+<a name="connectorChecker"></a>
 ####  Connector Checker
 
 It's a folder present at the package root, containing a piece of PHP code that will be called through a Web Browser.
@@ -898,12 +1160,13 @@ To check a Connector, if Kiamo is running, enter the following URL on a Web Brow
 
  The Connector Checker will print and point out the first issue found (or success).
 
- 
+
 
 <u>Note</u> : the character encoding detection has no way to be 100% accurate, so the Connector Checker can raise an erroneous character encoding issue. Knowing the character encoding is the last verification done, the Connector's code should be OK. Check the character encoding of the file pointed out by the Checker. If nothing's wrong, simply ignore the issue.
 
 
 
+<a name="sviScriptExamples"></a>
 ####  SVI Script Examples
 
 A basic SVI script example is provided at the root of the package
