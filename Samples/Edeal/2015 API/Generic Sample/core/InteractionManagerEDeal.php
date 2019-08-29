@@ -3,15 +3,15 @@
 namespace UserFiles\Connectors\KConnectorGenericSampleEDeal ;
 
 
-require_once __DIR__ . DIRECTORY_SEPARATOR . "tools" . DIRECTORY_SEPARATOR . "autoload.php" ;
+require_once __DIR__ . DIRECTORY_SEPARATOR . "../tools" . DIRECTORY_SEPARATOR . "autoload.php" ;
 
 
-use KiamoConnectorSampleTools\ConfManager ;
-use KiamoConnectorSampleTools\Logger      ;
-use KiamoConnectorSampleTools\Resources   ;
-use KiamoConnectorSampleTools\SoapClient  ;
-use KiamoConnectorSampleTools\SubModule   ;
-use KiamoConnectorSampleTools\Webs        ;
+use KiamoConnectorSampleToolsEDeal\ConfManager ;
+use KiamoConnectorSampleToolsEDeal\Logger      ;
+use KiamoConnectorSampleToolsEDeal\Resources   ;
+use KiamoConnectorSampleToolsEDeal\SoapClient  ;
+use KiamoConnectorSampleToolsEDeal\SubModule   ;
+use KiamoConnectorSampleToolsEDeal\Webs        ;
 
 
 class InteractionManagerEDeal extends SubModule

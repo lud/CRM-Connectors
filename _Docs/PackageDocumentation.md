@@ -4,9 +4,9 @@
 
 
 
-| Date    | 20190725  |
+| Date    | 20190829  |
 | :------ | --------- |
-| Version | v1.3.0    |
+| Version | v1.4.0    |
 | Author  | S.Iniesta |
 
 
@@ -80,7 +80,6 @@
 
 &nbsp;&nbsp;&nbsp;&nbsp;[SVI Script Examples](#sviScriptExamples)
 
-
 ------
 
 
@@ -112,13 +111,10 @@ The folder of a given CRM connector sample is a little folder tree :
   * the interaction manager, which creates and maintain a valid session with the external API, and communicates with the external services to gather the data required by the connector,
   * the entity manager, which maps the external data received from the APIs into a valid Kiamo structured form,
   * the customization manager, which implements the specific treatments (as phone number format, list sorting and filtering, ...).
-
 * `conf`          : configuration files folder,
-
+* `core`          : main connector's modules,
 * `data`          : resources folder,
-
 * `logs`          : log files folder,
-
 * `tools`        : all the tools sources provided by the package.
 
 
@@ -226,6 +222,10 @@ In more details, the design of those samples is split in 3 main parts :
   * the package tree :
 
     * `conf` folder   : contains the configuration files, in particular the connector and the logger configurations,
+    * `core` folder   : contains the main connector's modules :
+      * the interactions manager, which actually connects the connector with the external WS APIs,
+      * the entities manager, which maps the external entities into internal entities,
+      * the customization manager, which contains all the specific data treatments,
     * `data` folder   : contains the module's resources. In the current design, it will contain a little cache file used to store the latest valid API session token.
     * `logs` folder   : logs of the package,
     * `tools` folder : toolkit of the package (see below),

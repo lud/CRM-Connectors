@@ -3,14 +3,14 @@
 namespace UserFiles\Connectors\KConnectorGenericSampleDynamics ;
 
 
-require_once __DIR__ . DIRECTORY_SEPARATOR . "tools" . DIRECTORY_SEPARATOR . "autoload.php" ;
+require_once __DIR__ . DIRECTORY_SEPARATOR . "../tools" . DIRECTORY_SEPARATOR . "autoload.php" ;
 
 
-use KiamoConnectorSampleTools\ConfManager ;
-use KiamoConnectorSampleTools\Logger      ;
-use KiamoConnectorSampleTools\Resources   ;
-use KiamoConnectorSampleTools\SubModule   ;
-use KiamoConnectorSampleTools\Webs        ;
+use KiamoConnectorSampleToolsDynamics\ConfManager ;
+use KiamoConnectorSampleToolsDynamics\Logger      ;
+use KiamoConnectorSampleToolsDynamics\Resources   ;
+use KiamoConnectorSampleToolsDynamics\SubModule   ;
+use KiamoConnectorSampleToolsDynamics\Webs        ;
 
 
 class InteractionManagerDynamics extends SubModule

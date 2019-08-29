@@ -1,6 +1,6 @@
 <?php
 
-namespace KiamoConnectorSampleTools ;
+namespace KiamoConnectorSampleToolsSalesforce ;
 
 require_once __DIR__ . DIRECTORY_SEPARATOR . "datetimes.php" ;
 require_once __DIR__ . DIRECTORY_SEPARATOR .     "files.php" ;
@@ -9,10 +9,10 @@ require_once __DIR__ . DIRECTORY_SEPARATOR .     "uuids.php" ;
 
 use \DateTime, \DateTimeZone ;
 
-use KiamoConnectorSampleTools\Datetimes ;
-use KiamoConnectorSampleTools\Files     ;
-use KiamoConnectorSampleTools\Strings   ;
-use KiamoConnectorSampleTools\Uuids     ;
+use KiamoConnectorSampleToolsSalesforce\Datetimes ;
+use KiamoConnectorSampleToolsSalesforce\Files     ;
+use KiamoConnectorSampleToolsSalesforce\Strings   ;
+use KiamoConnectorSampleToolsSalesforce\Uuids     ;
 
 
 /***********************************************

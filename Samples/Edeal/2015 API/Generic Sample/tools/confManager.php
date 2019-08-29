@@ -1,10 +1,10 @@
 <?php
 
-namespace KiamoConnectorSampleTools ;
+namespace KiamoConnectorSampleToolsEDeal ;
 
 require_once __DIR__ . DIRECTORY_SEPARATOR .   "dict.php" ;
 
-use KiamoConnectorSampleTools\Dict ;
+use KiamoConnectorSampleToolsEDeal\Dict ;
 
 
 /***********************************************

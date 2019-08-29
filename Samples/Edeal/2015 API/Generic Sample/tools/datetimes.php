@@ -1,6 +1,6 @@
 <?php
 
-namespace KiamoConnectorSampleTools ;
+namespace KiamoConnectorSampleToolsEDeal ;
 
 
 use \DateTime, \DateTimeZone ;

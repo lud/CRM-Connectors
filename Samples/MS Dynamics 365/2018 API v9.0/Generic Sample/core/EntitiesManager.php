@@ -1,6 +1,6 @@
 <?php
 
-namespace UserFiles\Connectors\KConnectorGenericSampleEDeal ;
+namespace UserFiles\Connectors\KConnectorGenericSampleDynamics ;
 
 
 require_once KIAMO_CONNECTOR_TOOLS . "Entities/EntityInstance.php"                         ;
@@ -16,12 +16,12 @@ use Kiamo\Bundle\AdminBundle\Utility\Connectors\Entities\EntityField            
 use Kiamo\Bundle\AdminBundle\Utility\Connectors\Entities\EntityLayout              ;
 
 
-require_once __DIR__ . DIRECTORY_SEPARATOR . "tools" . DIRECTORY_SEPARATOR . "autoload.php" ;
+require_once __DIR__ . DIRECTORY_SEPARATOR . "../tools" . DIRECTORY_SEPARATOR . "autoload.php" ;
 
 
-use KiamoConnectorSampleTools\ConfManager ;
-use KiamoConnectorSampleTools\Logger      ;
-use KiamoConnectorSampleTools\SubModule   ;
+use KiamoConnectorSampleToolsDynamics\ConfManager ;
+use KiamoConnectorSampleToolsDynamics\Logger      ;
+use KiamoConnectorSampleToolsDynamics\SubModule   ;
 
 
 /*
@@ -90,7 +90,7 @@ class EntitiesManager extends SubModule
     $this->log( "Building entries collection...", Logger::LOG_INFOP, __METHOD__ ) ;
     foreach( $entriesArr as $externalInstanceData )
     {
-      $packagedEntry = $this->getPackagedEntry( $type, $externalInstanceData[ 'item' ] ) ;
+      $packagedEntry = $this->getPackagedEntry( $type, $externalInstanceData ) ;
       $this->log( "=> adding entry : " . $this->getPackagedEntryStr( $packagedEntry ), Logger::LOG_DEBUG, __METHOD__ ) ;
       $res->add( $packagedEntry[ 'id'     ],
                  $packagedEntry[ 'values' ],
@@ -118,11 +118,10 @@ class EntitiesManager extends SubModule
     $res = 'NO_MATCH' ;
     switch( $type )
     {
-    case 'contact'  :
-    case 'company'  :
-    case 'dossier'  :
-    case 'ticket'   :
-    case 'customer' :
+    case 'contact' :
+    case 'company' :
+    case 'dossier' :
+    case 'ticket'  :
       foreach( $map as $key => $val )
       {
         if( $val === $type )
@@ -193,11 +192,11 @@ class EntitiesManager extends SubModule
       switch( $type )
       {
       case 'contact' :
-        $labelField = $this->getEntityFieldPosition( $type, 'lastname' ) ;
+        $labelField = $this->getEntityField( $type, 'lastname' ) ;
         $res        = $values[ $labelField ] ;
         break ;
       case 'company' :
-        $labelField = $this->getEntityFieldPosition( $type, 'name' ) ;
+        $labelField = $this->getEntityField( $type, 'name' ) ;
         $res        = $values[ $labelField ] ;
         break ;
       case 'file'    :
@@ -223,7 +222,7 @@ class EntitiesManager extends SubModule
       }
       else if( $strItem[ 'type' ] === 'field'  )
       {
-        $labelField = $this->getEntityFieldPosition( $type, $strItem[ 'value' ] ) ;
+        $labelField = $this->getEntityField( $type, $strItem[ 'value' ] ) ;
         $value      = $values[ $labelField ] ;
       }
       if(  empty( $value ) ) continue ;
@@ -237,45 +236,36 @@ class EntitiesManager extends SubModule
   {
     $res = [] ;
 
-    // Map values with fields
-    $_entityFields = $this->getEntityFields( $type ) ;
-    $_values          = [] ;
-    $res[ 'values' ]  = [] ;
-    $i                = 0 ;
-    foreach( $_entityFields as $name => $desc )
-    {
-      $cur = utf8_encode( $values[$i] ) ;
-      array_push( $_values, $cur ) ;
-      $res[ 'values' ][ $name ] = $cur ;
-      $i++ ;
-    }
-
-    $res[ 'layout' ]  = $this->getEntityLayout(        $type          ) ;
-    $_idField         = $this->getEntityFieldPosition( $type, 'id'    ) ;
-    $res[ 'id'     ]  = $values[                       $_idField      ] ;
-    $res[ 'exturl' ]  = $this->getEntryExternalUrl(    $type, $_values ) ;
-    $res[ 'label'  ]  = $this->getEntryLabel(          $type, $_values ) ;
+    $res[ 'layout' ]  = $this->getEntityLayout(     $type          ) ;
+    $res[ 'values' ]  = $values                                      ;
+    $_idField         = $this->getEntityField(      $type, 'id'    ) ;
+    $res[ 'id'     ]  = $values[                    $_idField      ] ;
+    $res[ 'exturl' ]  = $this->getEntryExternalUrl( $type, $values ) ;
+    $res[ 'label'  ]  = $this->getEntryLabel(       $type, $values ) ;
 
     return $res ;
   }
   public   function getPackagedEntryStr( $packagedEntry )
   {
     $res  = "" ;
-    $res .=       "id=" .                    $packagedEntry[ 'id'     ]         ;
-    $res .= ", label='" .                    $packagedEntry[ 'label'  ] .   "'" ;
-    $res .= ", values=" . '[' . json_encode( $packagedEntry[ 'values' ] ) . ']' ;
-    $res .= ", exturl=" .                    $packagedEntry[ 'exturl' ]         ;
+    $res .=       "id=" .              $packagedEntry[ 'id'     ]       ;
+    $res .= ", label='" .              $packagedEntry[ 'label'  ] . "'" ;
+    $res .= ", values=" . json_encode( $packagedEntry[ 'values' ] )     ;
+    $res .= ", exturl=" .              $packagedEntry[ 'exturl' ]       ;
     return $res ;
   }
   
   public   function getEntryExternalUrl( $type, $values )
   {
     $res         = null ;
-    $_idField    = $this->getEntityFieldPosition( $type, 'id' ) ;
+    $_idField    = $this->getEntityField( $type, 'id' ) ;
     $id          = $values[ $_idField ] ;
+    $exttype     = $this->getEntityType( $type ) ;
+    $exttype     = substr( $exttype, 0, -1 ) ;
     $urlPatterns = $this->getConf( ConfManager::getConfPath( "environments", $this->tgtEnvName, "urls", "view" ) ) ;
     $urlPattern  = $urlPatterns[ $type ] ;
-    $res         = $urlPatterns[ 'baseUrl' ] . $urlPattern[ 'prefix' ] . $id . $urlPattern[ 'postfix' ] ;
+    
+    $res         = $urlPatterns[ 'baseUrl' ] . $urlPattern[ 'prefix' ] . '?etn=' . $exttype . '&id=%7b' . $id . '%7d' . $urlPattern[ 'postfix' ] ;
     return $res ;
   }
 
@@ -329,22 +319,6 @@ class EntitiesManager extends SubModule
       }
     }
     return $res ;
-  }
-
-  public   function getEntityFieldPosition( $type, $internalKey )
-  {
-    $res = '' ;
-    $map = $this->getEntityFields( $type ) ;
-    $i = 0 ;
-    foreach( $map as $key => $val )
-    {
-      if( $val[ 'key' ] === $internalKey )
-      {
-        break ;
-      }
-      $i++ ;
-    }
-    return $i ;
   }
 
   public   function getEntitySearchPatternKiamoInputs( $type )

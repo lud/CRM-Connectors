@@ -3,12 +3,12 @@
 namespace UserFiles\Connectors\KConnectorGenericSampleSalesforce ;
 
 
-require_once __DIR__ . DIRECTORY_SEPARATOR . "tools" . DIRECTORY_SEPARATOR . "autoload.php" ;
+require_once __DIR__ . DIRECTORY_SEPARATOR . "../tools" . DIRECTORY_SEPARATOR . "autoload.php" ;
 
 
-use KiamoConnectorSampleTools\ConfManager ;
-use KiamoConnectorSampleTools\Logger      ;
-use KiamoConnectorSampleTools\SubModule   ;
+use KiamoConnectorSampleToolsSalesforce\ConfManager ;
+use KiamoConnectorSampleToolsSalesforce\Logger      ;
+use KiamoConnectorSampleToolsSalesforce\SubModule   ;
 
 
 class CustomizationManager extends SubModule

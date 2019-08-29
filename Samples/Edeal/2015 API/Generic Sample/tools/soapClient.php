@@ -1,12 +1,12 @@
 <?php
 
-namespace KiamoConnectorSampleTools ;
+namespace KiamoConnectorSampleToolsEDeal ;
 
 
 require_once( __DIR__ . DIRECTORY_SEPARATOR . '/nusoap-0.9.5/nusoap.php' ) ;
 require_once( __DIR__ . DIRECTORY_SEPARATOR . 'logger.php'               ) ;
 
-use KiamoConnectorSampleTools\Logger      ;
+use KiamoConnectorSampleToolsEDeal\Logger      ;
 
 
 /***********************************************

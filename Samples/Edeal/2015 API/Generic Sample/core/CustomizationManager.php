@@ -1,14 +1,14 @@
 <?php
 
-namespace UserFiles\Connectors\KConnectorGenericSampleDynamics ;
+namespace UserFiles\Connectors\KConnectorGenericSampleEDeal ;
 
 
-require_once __DIR__ . DIRECTORY_SEPARATOR . "tools" . DIRECTORY_SEPARATOR . "autoload.php" ;
+require_once __DIR__ . DIRECTORY_SEPARATOR . "../tools" . DIRECTORY_SEPARATOR . "autoload.php" ;
 
 
-use KiamoConnectorSampleTools\ConfManager ;
-use KiamoConnectorSampleTools\Logger      ;
-use KiamoConnectorSampleTools\SubModule   ;
+use KiamoConnectorSampleToolsEDeal\ConfManager ;
+use KiamoConnectorSampleToolsEDeal\Logger      ;
+use KiamoConnectorSampleToolsEDeal\SubModule   ;
 
 
 class CustomizationManager extends SubModule
@@ -83,6 +83,29 @@ class CustomizationManager extends SubModule
      Pre-treatment Tools
   */
 
+  // getCustomerIds (for given contactId or companyId)
+  // ---
+  public   function getCustomers( $data, $additionalData = null )
+  {
+    $res = [] ;
+
+    $field = $data[ 'field' ] ;
+    $value = $data[ 'value' ] ;
+
+    // Searching customers corresponding to the entity Id
+    $type       = 'customer' ;
+    $etype      = $this->_parent->entitiesMgr->getEntityType(  $type ) ;
+    $efield     = $this->_parent->entitiesMgr->getEntityField( $type, $field ) ;
+    $operation  = "like" ;
+    $efields    = array_keys( $this->_parent->entitiesMgr->getEntityFields( $type ) ) ;
+
+    $res        = $this->_parent->interactionMgr->getEntriesList( $etype, $efield, $value, $operation, $efields ) ;
+    
+    $this->log( "Found " . sizeof( $res ) . " customer(s) for " . $field . "=" . $value, Logger::LOG_DEBUG, __METHOD__ ) ;
+    
+    return $res ;
+  }
+  
   // Inject In Phone Number
   // ---
   // data : the phone number string to treat

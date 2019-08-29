@@ -42,13 +42,13 @@ use Kiamo\Bundle\AdminBundle\Utility\Connectors\Interfaces\KiamoConnectorTicketS
 require_once __DIR__ . DIRECTORY_SEPARATOR . "tools" . DIRECTORY_SEPARATOR . "autoload.php" ;
 
 
-use KiamoConnectorSampleTools\Logger    ;
-use KiamoConnectorSampleTools\Module    ;
+use KiamoConnectorSampleToolsEDeal\Logger    ;
+use KiamoConnectorSampleToolsEDeal\Module    ;
 
 
-require_once __DIR__ . "/InteractionManagerEDeal.php" ;
-require_once __DIR__ . "/EntitiesManager.php" ;
-require_once __DIR__ . "/CustomizationManager.php" ;
+require_once __DIR__ . "/core/InteractionManagerEDeal.php" ;
+require_once __DIR__ . "/core/EntitiesManager.php" ;
+require_once __DIR__ . "/core/CustomizationManager.php" ;
 
 
 class KConnectorGenericSampleEDeal extends    Module

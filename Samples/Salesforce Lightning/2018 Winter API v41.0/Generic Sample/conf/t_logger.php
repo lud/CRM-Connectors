@@ -1,6 +1,6 @@
 <?php
 
-use KiamoConnectorSampleTools\Logger ;
+use KiamoConnectorSampleToolsSalesforce\Logger ;
 
 return [
   'behavior'          => [
