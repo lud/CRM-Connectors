@@ -3,17 +3,34 @@
 namespace UserFiles\Connectors\KConnectorGenericSampleDynamics ;
 
 
-require_once KIAMO_CONNECTOR_TOOLS . "Entities/EntityInstance.php"                         ;
-require_once KIAMO_CONNECTOR_TOOLS . "Entities/EntityInstanceCollection.php"               ;
-require_once KIAMO_CONNECTOR_TOOLS . "Entities/EntityField.php"                            ;
-require_once KIAMO_CONNECTOR_TOOLS . "Entities/EntityLayout.php"                           ;
+/**/
+// Kiamo v6.x : CRM Connectors Utilities
+// -----
+
+// Utilities
+use Kiamo\Bundle\AdminBundle\Utility\Connectors\ParameterBag                                    ;
+
+// Entities
+use Kiamo\Bundle\AdminBundle\Utility\Connectors\Entities\EntityInstance                         ;
+use Kiamo\Bundle\AdminBundle\Utility\Connectors\Entities\EntityInstanceCollection               ;
+use Kiamo\Bundle\AdminBundle\Utility\Connectors\Entities\EntityField                            ;
+use Kiamo\Bundle\AdminBundle\Utility\Connectors\Entities\EntityLayout                           ;
+/**/
 
 
-// Interfaces
-use Kiamo\Bundle\AdminBundle\Utility\Connectors\Entities\EntityInstance            ;
-use Kiamo\Bundle\AdminBundle\Utility\Connectors\Entities\EntityInstanceCollection  ;
-use Kiamo\Bundle\AdminBundle\Utility\Connectors\Entities\EntityField               ;
-use Kiamo\Bundle\AdminBundle\Utility\Connectors\Entities\EntityLayout              ;
+/*
+// Kiamo v7.x : CRM Connectors Utilities
+// -----
+
+// Utilities
+use Kiamo\Admin\Utility\Connectors\ParameterBag                                    ;
+
+// Entities
+use Kiamo\Admin\Utility\Connectors\Entities\EntityInstance                         ;
+use Kiamo\Admin\Utility\Connectors\Entities\EntityInstanceCollection               ;
+use Kiamo\Admin\Utility\Connectors\Entities\EntityField                            ;
+use Kiamo\Admin\Utility\Connectors\Entities\EntityLayout                           ;
+*/
 
 
 require_once __DIR__ . DIRECTORY_SEPARATOR . "../tools" . DIRECTORY_SEPARATOR . "autoload.php" ;

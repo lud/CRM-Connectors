@@ -3,10 +3,18 @@
 namespace UserFiles\Connectors\KConnectorGenericSampleSalesforce ;
 
 
+/**/
+// Kiamo v6.x : CRM Connectors Utilities
+// -----
+
 const KIAMO_ROOT            = __DIR__ . "/../../../../../" ;
 const KIAMO_CONNECTOR_TOOLS = KIAMO_ROOT . "www/Symfony/src/Kiamo/Bundle/AdminBundle/Utility/Connectors/" ;
 
 require_once KIAMO_CONNECTOR_TOOLS . "ParameterBag.php"                                    ;
+require_once KIAMO_CONNECTOR_TOOLS . "Entities/EntityInstance.php"                         ;
+require_once KIAMO_CONNECTOR_TOOLS . "Entities/EntityInstanceCollection.php"               ;
+require_once KIAMO_CONNECTOR_TOOLS . "Entities/EntityField.php"                            ;
+require_once KIAMO_CONNECTOR_TOOLS . "Entities/EntityLayout.php"                           ;
 require_once KIAMO_CONNECTOR_TOOLS . "Interfaces/KiamoConnectorInterface.php"              ;
 require_once KIAMO_CONNECTOR_TOOLS . "Interfaces/KiamoConnectorContactInterface.php"       ;
 require_once KIAMO_CONNECTOR_TOOLS . "Interfaces/KiamoConnectorContactUrlInterface.php"    ;
@@ -19,9 +27,17 @@ require_once KIAMO_CONNECTOR_TOOLS . "Interfaces/KiamoConnectorTicketUrlInterfac
 require_once KIAMO_CONNECTOR_TOOLS . "Interfaces/KiamoConnectorTicketSearchInterface.php"  ;
 
 
+// Utilities
+use Kiamo\Bundle\AdminBundle\Utility\Connectors\ParameterBag                                    ;
+
+// Entities
+use Kiamo\Bundle\AdminBundle\Utility\Connectors\Entities\EntityInstance                         ;
+use Kiamo\Bundle\AdminBundle\Utility\Connectors\Entities\EntityInstanceCollection               ;
+use Kiamo\Bundle\AdminBundle\Utility\Connectors\Entities\EntityField                            ;
+use Kiamo\Bundle\AdminBundle\Utility\Connectors\Entities\EntityLayout                           ;
+
 // Interfaces
-use Kiamo\Bundle\AdminBundle\Utility\Connectors\ParameterBag                       ;
-use Kiamo\Bundle\AdminBundle\Utility\Connectors\Interfaces\KiamoConnectorInterface ;
+use Kiamo\Bundle\AdminBundle\Utility\Connectors\Interfaces\KiamoConnectorInterface              ;
 
 // Interfaces : Contact
 use Kiamo\Bundle\AdminBundle\Utility\Connectors\Interfaces\KiamoConnectorContactInterface       ;
@@ -29,14 +45,68 @@ use Kiamo\Bundle\AdminBundle\Utility\Connectors\Interfaces\KiamoConnectorContact
 use Kiamo\Bundle\AdminBundle\Utility\Connectors\Interfaces\KiamoConnectorContactSearchInterface ;
 
 // Interface : Company
-use Kiamo\Bundle\AdminBundle\Utility\Connectors\Interfaces\KiamoConnectorCompanyInterface ;
-use Kiamo\Bundle\AdminBundle\Utility\Connectors\Interfaces\KiamoConnectorCompanyUrlInterface ;
+use Kiamo\Bundle\AdminBundle\Utility\Connectors\Interfaces\KiamoConnectorCompanyInterface       ;
+use Kiamo\Bundle\AdminBundle\Utility\Connectors\Interfaces\KiamoConnectorCompanyUrlInterface    ;
 use Kiamo\Bundle\AdminBundle\Utility\Connectors\Interfaces\KiamoConnectorCompanySearchInterface ;
 
 // Interface : Ticket
-use Kiamo\Bundle\AdminBundle\Utility\Connectors\Interfaces\KiamoConnectorTicketInterface ;
-use Kiamo\Bundle\AdminBundle\Utility\Connectors\Interfaces\KiamoConnectorTicketUrlInterface ;
-use Kiamo\Bundle\AdminBundle\Utility\Connectors\Interfaces\KiamoConnectorTicketSearchInterface ;
+use Kiamo\Bundle\AdminBundle\Utility\Connectors\Interfaces\KiamoConnectorTicketInterface        ;
+use Kiamo\Bundle\AdminBundle\Utility\Connectors\Interfaces\KiamoConnectorTicketUrlInterface     ;
+use Kiamo\Bundle\AdminBundle\Utility\Connectors\Interfaces\KiamoConnectorTicketSearchInterface  ;
+/**/
+
+
+/*
+// Kiamo v7.x : CRM Connectors Utilities
+// -----
+
+const KIAMO_ROOT            = __DIR__ . "/../../../../../" ;
+const KIAMO_CONNECTOR_TOOLS = KIAMO_ROOT . "www/Symfony/src/Kiamo/Admin/Utility/Connectors/" ;
+
+require_once KIAMO_CONNECTOR_TOOLS . "ParameterBag.php"                                    ;
+require_once KIAMO_CONNECTOR_TOOLS . "Entities/EntityInstance.php"                         ;
+require_once KIAMO_CONNECTOR_TOOLS . "Entities/EntityInstanceCollection.php"               ;
+require_once KIAMO_CONNECTOR_TOOLS . "Entities/EntityField.php"                            ;
+require_once KIAMO_CONNECTOR_TOOLS . "Entities/EntityLayout.php"                           ;
+require_once KIAMO_CONNECTOR_TOOLS . "Interfaces/KiamoConnectorInterface.php"              ;
+require_once KIAMO_CONNECTOR_TOOLS . "Interfaces/KiamoConnectorContactInterface.php"       ;
+require_once KIAMO_CONNECTOR_TOOLS . "Interfaces/KiamoConnectorContactUrlInterface.php"    ;
+require_once KIAMO_CONNECTOR_TOOLS . "Interfaces/KiamoConnectorContactSearchInterface.php" ;
+require_once KIAMO_CONNECTOR_TOOLS . "Interfaces/KiamoConnectorCompanyInterface.php"       ;
+require_once KIAMO_CONNECTOR_TOOLS . "Interfaces/KiamoConnectorCompanyUrlInterface.php"    ;
+require_once KIAMO_CONNECTOR_TOOLS . "Interfaces/KiamoConnectorCompanySearchInterface.php" ;
+require_once KIAMO_CONNECTOR_TOOLS . "Interfaces/KiamoConnectorTicketInterface.php"        ;
+require_once KIAMO_CONNECTOR_TOOLS . "Interfaces/KiamoConnectorTicketUrlInterface.php"     ;
+require_once KIAMO_CONNECTOR_TOOLS . "Interfaces/KiamoConnectorTicketSearchInterface.php"  ;
+
+
+// Utilities
+use Kiamo\Admin\Utility\Connectors\ParameterBag                                    ;
+
+// Entities
+use Kiamo\Admin\Utility\Connectors\Entities\EntityInstance                         ;
+use Kiamo\Admin\Utility\Connectors\Entities\EntityInstanceCollection               ;
+use Kiamo\Admin\Utility\Connectors\Entities\EntityField                            ;
+use Kiamo\Admin\Utility\Connectors\Entities\EntityLayout                           ;
+
+// Interfaces
+use Kiamo\Admin\Utility\Connectors\Interfaces\KiamoConnectorInterface              ;
+
+// Interfaces : Contact
+use Kiamo\Admin\Utility\Connectors\Interfaces\KiamoConnectorContactInterface       ;
+use Kiamo\Admin\Utility\Connectors\Interfaces\KiamoConnectorContactUrlInterface    ;
+use Kiamo\Admin\Utility\Connectors\Interfaces\KiamoConnectorContactSearchInterface ;
+
+// Interface : Company
+use Kiamo\Admin\Utility\Connectors\Interfaces\KiamoConnectorCompanyInterface       ;
+use Kiamo\Admin\Utility\Connectors\Interfaces\KiamoConnectorCompanyUrlInterface    ;
+use Kiamo\Admin\Utility\Connectors\Interfaces\KiamoConnectorCompanySearchInterface ;
+
+// Interface : Ticket
+use Kiamo\Admin\Utility\Connectors\Interfaces\KiamoConnectorTicketInterface        ;
+use Kiamo\Admin\Utility\Connectors\Interfaces\KiamoConnectorTicketUrlInterface     ;
+use Kiamo\Admin\Utility\Connectors\Interfaces\KiamoConnectorTicketSearchInterface  ;
+*/
 
 
 require_once __DIR__ . DIRECTORY_SEPARATOR . "tools" . DIRECTORY_SEPARATOR . "autoload.php" ;

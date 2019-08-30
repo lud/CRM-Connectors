@@ -5,7 +5,22 @@ namespace UserFiles\Connectors\KConnectorGenericSampleEDeal ;
 
 require_once __DIR__ . "/KConnectorGenericSampleEDeal.php" ;
 
-use Kiamo\Bundle\AdminBundle\Utility\Connectors\ParameterBag ;
+/**/
+// Kiamo v6.x : CRM Connectors Utilities
+// -----
+
+// Utilities
+use Kiamo\Bundle\AdminBundle\Utility\Connectors\ParameterBag                                    ;
+/**/
+
+
+/*
+// Kiamo v7.x : CRM Connectors Utilities
+// -----
+
+// Utilities
+use Kiamo\Admin\Utility\Connectors\ParameterBag                                    ;
+*/
 
 
 class CommandLineTester
