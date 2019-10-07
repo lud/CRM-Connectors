@@ -132,11 +132,12 @@ class KCRMSampleSalesforce implements KiamoConnectorInterface,
   public  function __construct()
   {
     $this->initConfig() ;
-    $this->logger         = new Logger( $this->getConf( 'self', 'logLevel' ) ) ;
+    $this->logger         = new Logger( $this->getConf( 'runtime', 'logLevel' ) ) ;
+
+    $this->log( "------------------------------------------------------------------------------", Logger::LOG_INFOP, __METHOD__ ) ;
     $this->interactionMgr = new InteractionManagerSalesforce( $this ) ;
     $this->entitiesMgr    = new EntitiesManager(              $this ) ;
-
-    $this->log( "INIT : OK", Logger::LOG_DEBUG, __METHOD__ ) ;
+    $this->log( "INIT : OK", Logger::LOG_INFOP, __METHOD__ ) ;
   }
   
   
@@ -148,12 +149,15 @@ class KCRMSampleSalesforce implements KiamoConnectorInterface,
     // Connector's configuration
     // ---
     $this->selfConf = [
-      'logLevel'     => Logger::LOG_DEBUG,
+      'service'       => 'salesforce',
+      'definition'    => 'W2018_41_0',
+    ] ;
 
-      'self'         => [
-        'service'       => 'salesforce',
-        'definition'    => 'W2018_41_0',
-      ],
+
+    // Runtime configuration
+    // ---
+    $this->runtimeConf = [
+      'logLevel'     => Logger::LOG_DEBUG,
     ] ;
 
 
@@ -410,6 +414,9 @@ class KCRMSampleSalesforce implements KiamoConnectorInterface,
     {
     case "self" :
       $conf = &$this->selfConf ;
+      break ;
+    case "runtime" :
+      $conf = &$this->runtimeConf ;
       break ;
     case "access" :
       $conf = &$this->accessConf ;
@@ -786,7 +793,7 @@ class KCRMSampleSalesforce implements KiamoConnectorInterface,
     $this->logger->log( $str, $level, $method, $indentLevel ) ;
   }
 
-  public   function getInDict( $dict, $key = null, $strict = false )
+  public   function getInDict( $dict, $key = null )
   {
     if( $key === null ) return $dict ;
 
@@ -795,16 +802,7 @@ class KCRMSampleSalesforce implements KiamoConnectorInterface,
     $cur = &$dict ;
     foreach( $_sk as $_k )
     {
-      if( !is_array( $cur ) || !array_key_exists( $_k, $cur ) )
-      {
-        if( $strict === true )
-        {
-          $estr = "get : undefined key '" . Dict::joinKey( $key ) . "'" ;
-          if( !empty( $this->name ) ) $estr .= " in dict '" . $this->name . "'" ;
-          throw new Exception( $estr ) ;
-        }
-        return null ;
-      }
+      if( !is_array( $cur ) || !array_key_exists( $_k, $cur ) ) return null ;
       $cur = &$cur[ $_k ] ;
     }
     return $cur ;
@@ -1689,7 +1687,7 @@ class CommandLineTester
     echo "\n" ;
     echo "Usage\n" ;
     echo "-----\n" ;
-    echo '> php CommandLineTester.php -f --test="<testId>"' . "\n" ;
+    echo '> php <ConnectorName>.php -f --test="<testId>"' . "\n" ;
     echo '  ==> execution du test <testId>.' . "\n" ;
   }
 
@@ -1718,7 +1716,7 @@ class CommandLineTester
   
   private  function run()
   {
-    echo 'Test #' . $this->testId . " : '" . $this->testFunctions[ $this->testFunctionName ][ 'purpose' ] . "'\n---\n" ;
+    echo '\nTest #' . $this->testId . " : '" . $this->testFunctions[ $this->testFunctionName ][ 'purpose' ] . "'\n---\n" ;
     call_user_func( $this->testFunctions[ $this->testFunctionName ][ 'function' ] ) ;
   }
 

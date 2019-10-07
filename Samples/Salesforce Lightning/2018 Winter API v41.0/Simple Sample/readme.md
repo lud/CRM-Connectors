@@ -1,12 +1,12 @@
 # Kiamo CRM Connector Samples
 
-## Package Description
+## Description
 
 
 
-| Date    | 20191004  |
+| Date    | 20191007  |
 | :------ | --------- |
-| Version | v1.0.0    |
+| Version | v1.2.0    |
 | Author  | S.Iniesta |
 
 
