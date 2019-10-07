@@ -28,7 +28,7 @@
 
 &nbsp;&nbsp;&nbsp;&nbsp;[Entities Manager](#entitiesManager)
 
-[Command Line Tester](#commandLineTester)
+&nbsp;&nbsp;&nbsp;&nbsp;[Command Line Tester](#commandLineTester)
 
 
 ------
@@ -49,10 +49,9 @@ This sample can be used as a simple illustration or as support to a more specifi
 <a name="description"></a>
 ####  Description
 
-In addition to this documentation, two files are provided :
+In addition to this documentation, the package contains the connector sample in one single file :
 
-* '<ConnectorName>'.php : the connector sample,
-* CommandLineTester.php : a command line tester, which helps the integration and the main feature tests step by step.
+* '<ConnectorName>'.php : the connector sample.
 
 The reference Kiamo documentation to implement a connector is unchanged : « `Development of CRM-ERP connectors` ».
 
@@ -79,6 +78,7 @@ The Connector Sample file contains :
 * the actual Kiamo CRM Connector class (plus the required configuration),
 * an Integration Manager class, which hold the responsibility to interact with the external CRM (authentication, Web Services requests),
 * an Entities Manager class, which hold the responsibility to map the raw received results into Kiamo formatted data,
+* a command line tester, which helps the integration and the main feature tests step by step.
 * some helpers (a simple logger, a CURL requests manager, ...).
 
 Basically, a classic use case is the following :
@@ -150,10 +150,8 @@ In the samples, the main implemented methods are :
 
 * several configuration entry points access shortcuts, and the mapping between the internal keys, the external CRM field names and the Kiamo types.
 
-------
-
 <a name="commandLineTester"></a>
-###  Command Line Tester
+####  Command Line Tester
 
 The Command Line Tester is a tool that is designed to :
 
@@ -161,6 +159,8 @@ The Command Line Tester is a tool that is designed to :
 * help the integration and the test of the main features of a connector, step by step.
 
 The purpose is to help the definition in very few lines, and the execution though a simple cmd shell line, of any kind of connector test.
+
+This class is only instantiated if the php file is executed by php using a command line shell, otherwise it's ignored.
 
 Basically, you will find the following kind of tests :
 
@@ -174,7 +174,7 @@ Basically, you will find the following kind of tests :
 The Command Line Tester is called this way :
 
 ```SHELL
-> php CommandLineTester.php -f --test=<testNb>
+> php <ConnectorName>.php -f --test=<testNb>
 ```
 
  The behavior is the following :
