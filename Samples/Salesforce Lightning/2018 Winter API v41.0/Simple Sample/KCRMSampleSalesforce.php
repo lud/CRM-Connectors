@@ -1735,18 +1735,7 @@ class CommandLineTester
       } 
     ] ;
 
-    $this->testFunctions[ 'test02' ] = [
-      'purpose'  => 'Test Connector conf Access',
-      'function' => function()
-      {
-        $k = 'accessdata.platform.apiVersion' ;
-        $v = $this->connector->getConf( "access", $k ) ;
-
-        echo "k=" . $k . ", v=" . $v . "\n" ;
-      } 
-    ] ;
-    
-    $this->testFunctions[ 'test03' ] = [
+    $this->testFunctions[ 'test01' ] = [
       'purpose'  => 'Test Salesforce Authentication',
       'function' => function()
       {
@@ -1756,7 +1745,7 @@ class CommandLineTester
     ] ;
     
 
-    $this->testFunctions[ 'test04' ] = [
+    $this->testFunctions[ 'test02' ] = [
       'purpose'  => 'Test Salesforce Query Build',
       'function' => function()
       {
@@ -1771,7 +1760,7 @@ class CommandLineTester
     ] ;
     
 
-    $this->testFunctions[ 'test05' ] = [
+    $this->testFunctions[ 'test03' ] = [
       'purpose'  => 'Test Salesforce Query Entries List (automatic authentication)',
       'function' => function()
       {
@@ -1786,7 +1775,7 @@ class CommandLineTester
     ] ;
     
 
-    $this->testFunctions[ 'test06' ] = [
+    $this->testFunctions[ 'test04' ] = [
       'purpose'  => 'Test Salesforce Query Single Entry by Id (automatic authentication)',
       'function' => function()
       {
@@ -1798,7 +1787,7 @@ class CommandLineTester
     ] ;
     
 
-    $this->testFunctions[ 'test07' ] = [
+    $this->testFunctions[ 'test05' ] = [
       'purpose'  => 'Test Entities Manager getEntryLabel',
       'function' => function()
       {
@@ -1813,7 +1802,7 @@ class CommandLineTester
     ] ;
 
 
-    $this->testFunctions[ 'test08' ] = [
+    $this->testFunctions[ 'test06' ] = [
       'purpose'  => 'Test Entities Manager getEntryInstance',
       'function' => function()
       {
@@ -1828,7 +1817,7 @@ class CommandLineTester
     ] ;
 
 
-    $this->testFunctions[ 'test09' ] = [
+    $this->testFunctions[ 'test07' ] = [
       'purpose'  => 'Test Connector find Entry by id',
       'function' => function()
       {
@@ -1842,7 +1831,7 @@ class CommandLineTester
     ] ;
 
 
-    $this->testFunctions[ 'test10' ] = [
+    $this->testFunctions[ 'test08' ] = [
       'purpose'  => 'Test Connector find Entry by query',
       'function' => function()
       {
@@ -1856,7 +1845,7 @@ class CommandLineTester
     ] ;
 
 
-    $this->testFunctions[ 'test11' ] = [
+    $this->testFunctions[ 'test09' ] = [
       'purpose'  => 'Test Connector find One Entry (by ParameterBag)',
       'function' => function()
       {
