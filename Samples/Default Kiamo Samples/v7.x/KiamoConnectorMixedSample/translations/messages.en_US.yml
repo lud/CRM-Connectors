@@ -1,0 +1,13 @@
+#A TRADUIRE
+kiamo_connector_mixed_sample: Kiamo connector mixed sample EN
+connecteur_non_configure: Connecteur non configuré EN
+cle_dapi_non_configure:  Clé d'API non configurée EN
+id_de_base_non_configure: Identifiant de la base non configuré EN
+cle_dapi_%s_invalide: La clé d'API "%s" est invalide EN
+identifiant_de_base_%s_invalide: L'identifiant de base "%s" est invalide EN
+impossible_de_recuperer_les informations_de_la_base_veuillez_verifier_votre_configuration_le_serveur_a_retourne_lerreur_suivante_%s: "Impossible de récupérer les informations de la base. Veuillez vérifier votre configuration. Le serveur a retourné l'erreur suivante: %s EN"
+cle_api: Clé d'API EN
+base: Base EN
+client: Client EN
+champs_a_afficher: Champs à afficher EN
+connecteur: Connecteur EN

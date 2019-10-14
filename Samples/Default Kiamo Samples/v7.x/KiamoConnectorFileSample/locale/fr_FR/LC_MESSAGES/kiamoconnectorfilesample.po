@@ -1,0 +1,57 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Kiamo connector file sample\n"
+"POT-Creation-Date: 2016-10-03 16:46+0200\n"
+"PO-Revision-Date: 2018-01-25 12:00+0100\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: fr_FR\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 2.0.6\n"
+"X-Poedit-Basepath: ../../..\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-SearchPath-0: .\n"
+
+msgid "fichier_de_configuration_absent"
+msgstr "Fichier de configuration absent"
+
+msgid "le_fichier_configuration_doit_retourner_un_tableau"
+msgstr "Le fichier de configuration doit retourner un tableau."
+
+msgid "kiamo_connector_file_sample"
+msgstr "Kiamo connector file sample"
+
+msgid "connecteur_non_configure"
+msgstr "Connecteur non configuré"
+
+msgid "cle_dapi_non_configure"
+msgstr "Clé d'API non configurée"
+
+#, php-format
+msgid "cle_dapi_%s_invalide"
+msgstr "Clé d'API \"%s\" invalide"
+
+msgid "id_de_base_non_configure"
+msgstr "Identifiant de base de contact non configuré"
+
+msgid "aucun_champ_configure"
+msgstr "Aucun champ configuré"
+
+#, php-format
+msgid "identifiant_de_base_%s_invalide"
+msgstr "Identifiant de base de contact \"%s\" invalide"
+
+#, php-format
+msgid ""
+"impossible_de_recuperer_les_informations_de_la_base_veuillez_verifier_votre_configuration_le_serveur_a_retourne_lerreur_suivante_"
+"%s"
+msgstr ""
+"Impossible de récuperer les informations de la base.\n"
+"Veuillez vérifier votre configuration.\n"
+"Le serveur a retourné l'erreur suivante: %s"
+
+msgid "client"
+msgstr "Client"
