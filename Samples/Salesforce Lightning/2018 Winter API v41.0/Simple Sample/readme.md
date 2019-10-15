@@ -1,12 +1,12 @@
 # Kiamo CRM Connector Samples
 
-## Description
+## Salesforce
 
 
 
-| Date    | 20191007  |
+| Date    | 20191015  |
 | :------ | --------- |
-| Version | v1.2.0    |
+| Version | v1.3.0    |
 | Author  | S.Iniesta |
 
 
@@ -43,6 +43,8 @@
 
 This folder contains the sample of a Kiamo CRM Connector for **Salesforce Lightning** *(API v41.0, winter 2018)*.
 This sample can be used as a simple illustration or as support to a more specific implementation.
+
+<u>Note</u> : the best way to discover and appropriate the connector may be to read and, when the connector is set up, to run the basic connector's main components tests, located in the `CommandLineTester` class at the end of the file.
 
 
 
