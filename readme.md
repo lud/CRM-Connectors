@@ -4,9 +4,9 @@
 
 
 
-| Date    | 20191016  |
+| Date    | 20191022  |
 | :------ | --------- |
-| Version | v2.0.0    |
+| Version | v2.1.0    |
 | Author  | S.Iniesta |
 
 
@@ -70,11 +70,11 @@ Each sample can be used as a simple illustration, or as support to a more specif
 
 The following scheme presents a synthetic design of a Kiamo CRM Connector :
 
-![Kiamo CRM Connector Design](https://github.com/openKiamo/CRM-Connectors/blob/master/_resources/01_KiamoConnectorCRM.png)
+![Kiamo CRM Connector Design](https://github.com/openKiamo/CRM-Connectors/blob/master/data/01_KiamoConnectorCRM.png)
 
 It's mainly dedicated to gather external data and entities, corresponding to the inputs received by Kiamo, as a customer or a ticket description for instance.
 
-The folder of a given CRM connector sample is composed of :
+A given CRM connector sample is composed of :
 
 * the implementation of the CRM connector, which is usually composed of :
   * the main Kiamo connector class,
@@ -125,7 +125,7 @@ The current CRM connector samples (may 2019) are the following :
 
 The following scheme presents the typical architecture of a connector sample :
 
-![Connector Sample Architecture](https://github.com/openKiamo/CRM-Connectors/blob/master/_resources/02_ConnectorSampleDesign.png)
+![Connector Sample Architecture](https://github.com/openKiamo/CRM-Connectors/blob/master/data/02_ConnectorSampleDesign.png)
 
 
 
