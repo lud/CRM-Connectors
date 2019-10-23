@@ -54,7 +54,7 @@ This sample can be used as a simple illustration or as support to a more specifi
 
 In addition to this documentation, the package contains the connector sample in one single file :
 
-* '<ConnectorName>'.php : the connector sample.
+* `<ConnectorName>.php` : the connector sample.
 
 The reference Kiamo documentation to implement a connector is unchanged : « `Development of CRM-ERP connectors` ».
 
