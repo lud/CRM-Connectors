@@ -732,7 +732,7 @@ class KCRMSampleDynamics implements KiamoConnectorInterface,
     if( empty( $res ) )
     {
       $this->log( "=> No match found", Logger::LOG_INFO, __METHOD__ ) ;
-      return null ;
+      return new EntityInstanceCollection( $this->getEntityLayout( $type ) ) ;
     }
 
     $this->log(   "=> Match(es) found : " . sizeof( $res ), Logger::LOG_INFO, __METHOD__ ) ;
