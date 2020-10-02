@@ -1982,10 +1982,10 @@ class CommandLineTester
       {
         $entityType = 'contacts' ;
         $queryVal   = "xxxxxxxxxx" ;
-        $entry      = $this->connector->findEntriesByQuery( $entityType, $queryVal ) ;
-
-        if( $entry === null ) echo "! NO entry found for query=" . $queryVal . "\n" ;
-        else                  echo "OK : entry found for query=" . $queryVal . " (see logs)\n" ;
+        $collection = $this->connector->findEntriesByQuery( $entityType, $queryVal ) ;
+        $entries    = $collection->getEntities() ;
+        
+        echo count( $entries ) . " entry(ies) found for query=" . $queryVal . " (see logs)\n" ;
       } 
     ] ;
 
